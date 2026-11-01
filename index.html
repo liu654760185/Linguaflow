@@ -80,11 +80,19 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:8px 20px 24px
 const $=id=>document.getElementById(id);
 const status=$('status'), out=$('output');
 const langs={autodetect:'自动识别','zh-CN':'中文简体','zh-TW':'中文繁体',en:'英语',es:'西班牙语',fr:'法语',de:'德语',ja:'日语',ko:'韩语',pt:'葡萄牙语',it:'意大利语',ru:'俄语',ar:'阿拉伯语',th:'泰语',vi:'越南语',id:'印尼语',tr:'土耳其语',nl:'荷兰语',pl:'波兰语',hi:'印地语',fil:'菲律宾语'};
-$('swap').onclick=()=>{let a=$('source').value,b=$('target').value;if(a==='autodetect')a='zh-CN';$('source').value=b;$('target').value=a;};
+$('swap').onclick=()=>{let a=$('source').value,b=$('target').value;if(a==='autodetect'){const from=b;const to=(b==='zh-CN'||b==='zh-TW')?'en':'zh-CN';$('source').value=from;$('target').value=to;return;}$('source').value=b;$('target').value=a;};
 $('clear').onclick=()=>{$('input').value='';out.textContent='译文会显示在这里。';status.textContent='';};
 $('translate').onclick=async()=>{
  const text=$('input').value.trim();if(!text){status.textContent='请先输入或识别文字。';return;}
- const source=$('source').value,target=$('target').value;
+ const selectedSource=$('source').value, selectedTarget=$('target').value;
+ let source=selectedSource, target=selectedTarget;
+ // 双向自动模式：默认目标为中文时，若输入明显是中文，则自动改为中文→英语；
+ // 其他非中文输入仍按自动识别→所选目标语言处理。
+ if(source==='autodetect' && (target==='zh-CN' || target==='zh-TW')){
+  const cjk=(text.match(/[\\u3400-\\u9fff\\uf900-\\ufaff]/g)||[]).length;
+  const letters=(text.match(/[A-Za-z\\u3400-\\u9fff\\uf900-\\ufaff]/g)||[]).length;
+  if(cjk>0 && cjk/Math.max(letters,1)>=0.25){source='zh-CN';target='en';}
+ }
  if(source!=='autodetect'&&source===target){status.textContent='原文语言和目标语言相同，请更改其中一项。';return;}
  $('translate').disabled=true;status.textContent='正在翻译，请稍候…';out.textContent='';
  try{
