@@ -1,0 +1,9 @@
+{
+  "name": "LinguaFlow 社交翻译助手",
+  "short_name": "LinguaFlow",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f5f6fb",
+  "theme_color": "#6657d9",
+  "icons": []
+}

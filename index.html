@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6657d9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="LinguaFlow">
+<link rel="manifest" href="manifest.webmanifest">
+<title>LinguaFlow · 社交翻译助手</title>
+<style>
+:root{color-scheme:light;--ink:#20223a;--muted:#73758b;--brand:#6657d9;--bg:#f5f6fb;--card:#fff;--line:#e7e8f0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{padding:22px 20px 16px;background:linear-gradient(135deg,#5f55d8,#8b72e8);color:white;border-radius:0 0 26px 26px}
+.brand{font-size:25px;font-weight:800;letter-spacing:-.5px}.tag{opacity:.88;font-size:13px;margin-top:5px}
+main{max-width:680px;margin:auto;padding:16px 15px 35px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:0 0 14px;box-shadow:0 4px 18px #25264a08}
+h2{font-size:16px;margin:0 0 12px}.row{display:flex;gap:10px;align-items:center}.row>*{min-width:0;flex:1}
+label{font-size:12px;color:var(--muted);display:block;margin:0 0 6px}
+select,textarea,input{width:100%;font:inherit;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);padding:12px;outline:none}
+textarea{min-height:150px;resize:vertical;line-height:1.5}
+button{border:0;border-radius:13px;background:var(--brand);color:white;font-weight:700;font-size:15px;padding:13px 16px;cursor:pointer}
+button.secondary{background:#efedff;color:#4e43bd}button:disabled{opacity:.55}
+.actions{display:flex;gap:9px;margin-top:12px}.actions button{flex:1}
+.result{white-space:pre-wrap;line-height:1.6;min-height:60px;background:#f1fbf5;border:1px solid #d9f0e1;border-radius:13px;padding:13px}
+.small{font-size:12px;color:var(--muted);line-height:1.5}.status{font-size:13px;color:var(--muted);margin-top:9px;min-height:18px}
+.drop{display:block;border:1.5px dashed #c9c6ee;background:#faf9ff;border-radius:14px;padding:17px;text-align:center}
+.drop input{display:none}.pill{display:inline-block;border-radius:99px;background:#efedff;color:#5145c0;padding:5px 9px;font-size:11px;font-weight:700;margin-bottom:8px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:8px 20px 24px}
+@media(min-width:600px){main{padding-top:24px}.card{padding:20px}}
+</style>
+</head>
+<body>
+<header><div class="brand">🌐 LinguaFlow</div><div class="tag">跨语言社交翻译助手 · iPhone Web Beta</div></header>
+<main>
+<section class="card">
+ <span class="pill">双向翻译</span><h2>选择语言</h2>
+ <div class="row">
+  <div><label for="source">原文语言</label><select id="source">
+   <option value="autodetect">自动识别</option><option value="zh-CN">中文（简体）</option><option value="zh-TW">中文（繁体）</option><option value="en">英语</option><option value="es">西班牙语</option><option value="fr">法语</option><option value="de">德语</option><option value="ja">日语</option><option value="ko">韩语</option><option value="pt">葡萄牙语</option><option value="it">意大利语</option><option value="ru">俄语</option><option value="ar">阿拉伯语</option><option value="th">泰语</option><option value="vi">越南语</option><option value="id">印尼语</option><option value="tr">土耳其语</option><option value="nl">荷兰语</option><option value="pl">波兰语</option><option value="hi">印地语</option><option value="fil">菲律宾语</option>
+  </select></div>
+  <button class="secondary" id="swap" style="flex:0 0 48px;padding:12px">⇄</button>
+  <div><label for="target">翻译成</label><select id="target">
+   <option value="zh-CN" selected>中文（简体）</option><option value="zh-TW">中文（繁体）</option><option value="en">英语</option><option value="es">西班牙语</option><option value="fr">法语</option><option value="de">德语</option><option value="ja">日语</option><option value="ko">韩语</option><option value="pt">葡萄牙语</option><option value="it">意大利语</option><option value="ru">俄语</option><option value="ar">阿拉伯语</option><option value="th">泰语</option><option value="vi">越南语</option><option value="id">印尼语</option><option value="tr">土耳其语</option><option value="nl">荷兰语</option><option value="pl">波兰语</option><option value="hi">印地语</option><option value="fil">菲律宾语</option>
+  </select></div>
+ </div>
+</section>
+<section class="card">
+ <h2>输入消息或评论</h2>
+ <textarea id="input" placeholder="粘贴 WhatsApp 消息、TikTok 评论、Facebook 帖子或你想发送的回复……"></textarea>
+ <div class="actions"><button id="translate">立即翻译</button><button class="secondary" id="clear">清空</button></div>
+ <div class="status" id="status" aria-live="polite"></div>
+</section>
+<section class="card">
+ <h2>翻译结果</h2><div class="result" id="output">译文会显示在这里。</div>
+ <div class="actions"><button class="secondary" id="copy">复制译文</button><button class="secondary" id="share">分享译文</button></div>
+</section>
+<section class="card">
+ <h2>截图 / 图片评论识别</h2>
+ <label class="drop" for="image"><strong>选择 WhatsApp、TikTok 或 Facebook 截图</strong><br><span class="small">在 iPhone 截图后，从照片图库选择图片，识别出的文字会填入上方输入框。</span><br><br><button type="button" class="secondary">选择图片</button><input id="image" type="file" accept="image/*"></label>
+ <div class="status" id="ocrstatus"></div>
+</section>
+<section class="card">
+ <h2>在社交 App 中使用</h2>
+ <ol class="small" style="padding-left:19px;line-height:1.8;margin-bottom:0">
+  <li>在 WhatsApp、TikTok 或 Facebook 里复制文字，返回 LinguaFlow 粘贴并翻译。</li>
+  <li>评论太多时，截图后在上方选择图片，OCR 会提取截图中的文字。</li>
+  <li>回复外国朋友时，把原文语言设为中文、目标语言设为对方语言。</li>
+  <li>Safari 中打开本工具后，可点“分享”→“添加到主屏幕”。</li>
+ </ol>
+</section>
+<section class="card">
+ <h2>隐私与功能说明</h2>
+ <p class="small">图片文字识别在浏览器中运行。翻译请求会发送到 MyMemory 公共翻译服务；请勿提交密码、验证码、财务信息或高度私密聊天内容。本工具不能后台读取其他 App，也不能自动覆盖 WhatsApp、TikTok 或 Facebook 的原生界面。公共翻译服务有使用限制，翻译质量和可用性可能变化。</p>
+</section>
+</main>
+<footer>LinguaFlow Web Beta · 为个人试用制作</footer>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const status=$('status'), out=$('output');
+const langs={autodetect:'自动识别','zh-CN':'中文简体','zh-TW':'中文繁体',en:'英语',es:'西班牙语',fr:'法语',de:'德语',ja:'日语',ko:'韩语',pt:'葡萄牙语',it:'意大利语',ru:'俄语',ar:'阿拉伯语',th:'泰语',vi:'越南语',id:'印尼语',tr:'土耳其语',nl:'荷兰语',pl:'波兰语',hi:'印地语',fil:'菲律宾语'};
+$('swap').onclick=()=>{let a=$('source').value,b=$('target').value;if(a==='autodetect')a='zh-CN';$('source').value=b;$('target').value=a;};
+$('clear').onclick=()=>{$('input').value='';out.textContent='译文会显示在这里。';status.textContent='';};
+$('translate').onclick=async()=>{
+ const text=$('input').value.trim();if(!text){status.textContent='请先输入或识别文字。';return;}
+ const source=$('source').value,target=$('target').value;
+ if(source!=='autodetect'&&source===target){status.textContent='原文语言和目标语言相同，请更改其中一项。';return;}
+ $('translate').disabled=true;status.textContent='正在翻译，请稍候…';out.textContent='';
+ try{
+  const pair=(source==='autodetect'?'autodetect':source)+'|'+target;
+  const url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(text.slice(0,4500))+'&langpair='+encodeURIComponent(pair);
+  const r=await fetch(url);if(!r.ok)throw new Error('翻译服务暂时不可用');
+  const data=await r.json();
+  if(data.responseStatus!==200)throw new Error(data.responseDetails||'翻译服务暂时不可用');
+  out.textContent=data.responseData.translatedText||'没有返回译文。';
+  status.textContent='完成 · '+(langs[source]||'自动识别')+' → '+langs[target];
+ }catch(e){status.textContent='翻译失败：'+e.message+'。请检查网络，或稍后重试。';}
+ finally{$('translate').disabled=false;}
+};
+$('copy').onclick=async()=>{try{await navigator.clipboard.writeText(out.textContent);status.textContent='译文已复制。';}catch{status.textContent='无法自动复制，请长按译文选择复制。';}};
+$('share').onclick=async()=>{if(navigator.share){try{await navigator.share({text:out.textContent});}catch{}}else{status.textContent='此浏览器不支持系统分享，请复制译文。';}};
+$('image').onchange=async e=>{
+ const f=e.target.files[0];if(!f)return;
+ $('ocrstatus').textContent='正在识别图片文字…首次加载识别引擎可能需要一些时间。';
+ try{
+  if(!window.Tesseract)throw new Error('OCR 引擎加载失败，请检查网络后刷新页面。');
+  const result=await Tesseract.recognize(f,'eng+chi_sim+chi_tra+jpn+kor+spa+fra+deu+por+ita+rus', {logger:m=>{if(m.status==='recognizing text')$('ocrstatus').textContent='识别中 '+Math.round((m.progress||0)*100)+'%';}});
+  $('input').value=result.data.text.trim();
+  $('ocrstatus').textContent=$('input').value?'识别完成，文字已放入输入框。':'没有识别到文字，请尝试更清晰的截图。';
+ }catch(err){$('ocrstatus').textContent='识别失败：'+err.message;}
+ e.target.value='';
+};
+if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
